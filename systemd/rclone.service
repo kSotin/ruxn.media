@@ -1,0 +1,24 @@
+[Unit]
+Description=rclone mount
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=notify
+KillMode=none
+RestartSec=5
+User=ruxn
+Group=ruxn
+ExecStart=/usr/bin/rclone mount gcrypt: /mnt/gdrive \
+    --allow-other \
+    --default-permissions \
+    --buffer-size 128M \
+    --poll-interval 15s \
+    --log-level INFO \
+    --vfs-read-chunk-size 32M \
+    --async-read=false
+ExecStop=/bin/fusermount -uz /mnt/gdrive
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

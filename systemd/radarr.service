@@ -1,0 +1,27 @@
+[Unit]
+Description=Radarr Daemon
+Requires=mergerfs.service
+After=syslog.target network.target mergerfs.service
+
+[Service]
+# Change the user and group variables here.
+User=ruxn
+Group=ruxn
+
+Type=simple
+
+# Change the path to Radarr or mono here if it is in a different location for you.
+ExecStart=/usr/bin/mono --debug /opt/Radarr/Radarr.exe -nobrowser
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+# These lines optionally isolate (sandbox) Radarr from the rest of the system.
+# Make sure to add any paths it might use to the list below (space-separated).
+#ReadWritePaths=/opt/Radarr /path/to/movies/folder
+#ProtectSystem=strict
+#PrivateDevices=true
+#ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+[Unit]
+Description=mergerfs mount
+Requires=rclone.service
+After=rclone.service
+RequiresMountsFor=/home/ruxn/local
+RequiresMountsFor=/mnt/gdrive
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/mergerfs /home/ruxn/local:/mnt/gdrive /home/ruxn/media -o rw,async_read=false,use_ino,allow_other,func.getattr=newest,category.action=all,category.create=ff,cache.files=partial,dropcacheonclose=true
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

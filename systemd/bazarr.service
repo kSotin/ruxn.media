@@ -1,0 +1,20 @@
+[Unit]
+Description=Bazarr Daemon
+Requires=mergerfs.service
+After=syslog.target network.target mergerfs.service sonarr.service radarr.service
+
+[Service]
+WorkingDirectory=/opt/bazarr/
+User=ruxn
+Group=ruxn
+Restart=on-failure
+RestartSec=5
+Type=simple
+ExecStart=/usr/bin/python3.8 /opt/bazarr/bazarr.py
+KillSignal=SIGINT
+TimeoutStopSec=20
+SyslogIdentifier=bazarr
+ExecStartPre=/bin/sleep 30
+
+[Install]
+WantedBy=multi-user.target
