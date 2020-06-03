@@ -1,0 +1,13 @@
+[Unit]
+Description=Service Availability Checker & Updater
+After=network-online.target
+
+[Service]
+Type=simple
+User=ruxn
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/bin/python3 /opt/bin/statuscheck.py --wall
+
+[Install]
+WantedBy=multi-user.target
