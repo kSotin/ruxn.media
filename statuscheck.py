@@ -165,61 +165,67 @@ if '-h' in sys.argv or '--host' in sys.argv:
 else:
     isHost = False
 
+if '-w' in sys.argv or '--wall' in sys.argv:
+    inWall = True
+else:
+    inWall = False
+
 while True:
-    if isHost == False:
-        # Check plex
-        if not check_plex(plex_url) and statuses['plex_media_server']:
-            print('[Outage] An outage detected of PMS.')
-            announce_outage(components_id['plex_media_server'])
-            statuses['plex_media_server'] = False
-        if check_plex(plex_url) and not statuses['plex_media_server']:
-            print('[Restoration] Restoration from outage detected of PMS.')
-            statuses['plex_media_server'] = True
-            to_announce.add('plex_media_server')
-        # Check sites
-        for site in sites_url:
-            if not check_site(sites_url[site]) and statuses[site]:
-                print('[Outage] An outage detected of ' + site.title() + '.')
-                announce_outage(components_id[site])
-                statuses[site] = False
-            if check_site(sites_url[site]) and not statuses[site]:
-                print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
-                statuses[site] = True
-                to_announce.add(site)
-        # Check back-end services
-        for service in services:
-            if not statuses[service]:
-                print('[Restoration] Restoration from outage detected of ' + service + '.')
-    else:
-        # Check own-hosted plex
-        if not check_plex_own(plex_port) and statuses['plex_media_server']:
-            print('[Outage] An outage detected of PMS.')
-            announce_outage(components_id['plex_media_server'])
-            statuses['plex_media_server'] = False
-        if check_plex_own(plex_port) and not statuses['plex_media_server']:
-            print('[Restoration] Restoration from outage detected of PMS.')
-            statuses['plex_media_server'] = True
-            to_announce.add('plex_media_server')
-        # Check own-hosted sites
-        for site in sites_port:
-            if not check_site_own(sites_port[site]) and statuses[site]:
-                print('[Outage] An outage detected of ' + site.title() + '.')
-                announce_outage(components_id[site])
-                statuses[site] = False
-            if check_site_own(sites_port[site]) and not statuses[site]:
-                print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
-                statuses[site] = True
-                to_announce.add(site)
-        # Check own-hosted back-end services
-        for service in services:
-            if not check_back_end(service) and statuses[service]:
-                print('[Outage] An outage detected of ' + service + '.')
-                announce_outage(components_id[service])
-                statuses[service] = False
-            if check_back_end(service) and not statuses[service]:
-                print('[Restoration] Restoration from outage detected of ' + service + '.')
-                statuses[service] = True
-                to_announce.add(service)
+    if inWall == False:
+        if isHost == False:
+            # Check plex
+            if not check_plex(plex_url) and statuses['plex_media_server']:
+                print('[Outage] An outage detected of PMS.')
+                announce_outage(components_id['plex_media_server'])
+                statuses['plex_media_server'] = False
+            if check_plex(plex_url) and not statuses['plex_media_server']:
+                print('[Restoration] Restoration from outage detected of PMS.')
+                statuses['plex_media_server'] = True
+                to_announce.add('plex_media_server')
+            # Check sites
+            for site in sites_url:
+                if not check_site(sites_url[site]) and statuses[site]:
+                    print('[Outage] An outage detected of ' + site.title() + '.')
+                    announce_outage(components_id[site])
+                    statuses[site] = False
+                if check_site(sites_url[site]) and not statuses[site]:
+                    print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
+                    statuses[site] = True
+                    to_announce.add(site)
+            # Check back-end services
+            for service in services:
+                if not statuses[service]:
+                    print('[Restoration] Restoration from outage detected of ' + service + '.')
+        else:
+            # Check own-hosted plex
+            if not check_plex_own(plex_port) and statuses['plex_media_server']:
+                print('[Outage] An outage detected of PMS.')
+                announce_outage(components_id['plex_media_server'])
+                statuses['plex_media_server'] = False
+            if check_plex_own(plex_port) and not statuses['plex_media_server']:
+                print('[Restoration] Restoration from outage detected of PMS.')
+                statuses['plex_media_server'] = True
+                to_announce.add('plex_media_server')
+            # Check own-hosted sites
+            for site in sites_port:
+                if not check_site_own(sites_port[site]) and statuses[site]:
+                    print('[Outage] An outage detected of ' + site.title() + '.')
+                    announce_outage(components_id[site])
+                    statuses[site] = False
+                if check_site_own(sites_port[site]) and not statuses[site]:
+                    print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
+                    statuses[site] = True
+                    to_announce.add(site)
+            # Check own-hosted back-end services
+            for service in services:
+                if not check_back_end(service) and statuses[service]:
+                    print('[Outage] An outage detected of ' + service + '.')
+                    announce_outage(components_id[service])
+                    statuses[service] = False
+                if check_back_end(service) and not statuses[service]:
+                    print('[Restoration] Restoration from outage detected of ' + service + '.')
+                    statuses[service] = True
+                    to_announce.add(service)
     # Check proxies
     for proxy in proxies_url:
         if not check_proxy(proxies_url[proxy]) and statuses[proxy]:
