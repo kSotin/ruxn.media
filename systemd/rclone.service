@@ -11,8 +11,6 @@ User=ruxn
 Group=ruxn
 ExecStart=/usr/bin/rclone mount gcrypt: /mnt/gdrive \
     --allow-other \
-    --default-permissions \
-    --buffer-size 128M \
     --poll-interval 15s \
     --log-level INFO \
     --vfs-read-chunk-size 32M \
