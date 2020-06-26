@@ -174,14 +174,14 @@ while True:
     if inWall == False:
         if isHost == False:
             # Check plex
-            if not check_plex(plex_url) and statuses['plex_media_server']:
+            if not check_plex(plex_url) and statuses['plex media server']:
                 print('[Outage] An outage detected of PMS.')
-                announce_outage(components_id['plex_media_server'])
-                statuses['plex_media_server'] = False
-            if check_plex(plex_url) and not statuses['plex_media_server']:
+                announce_outage(components_id['plex media server'])
+                statuses['plex media server'] = False
+            if check_plex(plex_url) and not statuses['plex media server']:
                 print('[Restoration] Restoration from outage detected of PMS.')
-                statuses['plex_media_server'] = True
-                to_announce.add('plex_media_server')
+                statuses['plex media server'] = True
+                to_announce.add('plex media server')
             # Check sites
             for site in sites_url:
                 if not check_site(sites_url[site]) and statuses[site]:
@@ -198,14 +198,14 @@ while True:
                     print('[Restoration] Restoration from outage detected of ' + service + '.')
         else:
             # Check own-hosted plex
-            if not check_plex_own(plex_port) and statuses['plex_media_server']:
+            if not check_plex_own(plex_port) and statuses['plex media server']:
                 print('[Outage] An outage detected of PMS.')
-                announce_outage(components_id['plex_media_server'])
-                statuses['plex_media_server'] = False
-            if check_plex_own(plex_port) and not statuses['plex_media_server']:
+                announce_outage(components_id['plex media server'])
+                statuses['plex media server'] = False
+            if check_plex_own(plex_port) and not statuses['plex media server']:
                 print('[Restoration] Restoration from outage detected of PMS.')
-                statuses['plex_media_server'] = True
-                to_announce.add('plex_media_server')
+                statuses['plex media server'] = True
+                to_announce.add('plex media server')
             # Check own-hosted sites
             for site in sites_port:
                 if not check_site_own(sites_port[site]) and statuses[site]:
