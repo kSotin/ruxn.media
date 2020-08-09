@@ -123,7 +123,7 @@ def announce_outage(component_id):
         headers = {'Authorization': 'OAuth ' + API_key}, \
         data = json.dumps({"component": {"status": "major_outage"}}))
     r2 = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_outage/with/key/' + IFTTT_key, \
-         data = json.dumps({"value1": r1.json()['name']}))
+         data = {"value1": r1.json()['name']})
 
 def announce_restoration(to_announce):
     time.sleep(30)
@@ -137,7 +137,7 @@ def announce_restoration(to_announce):
                     headers = {'Authorization': 'OAuth ' + API_key}, \
                     data = json.dumps({"component": {"status": "operational"}}))
                 r2 = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_restoration/with/key/' + IFTTT_key, \
-                     data = json.dumps({"value1": r1.json()['name']}))
+                     data = {"value1": r1.json()['name']})
                 to_announce.remove(component)
     finally:
         lock.release()
