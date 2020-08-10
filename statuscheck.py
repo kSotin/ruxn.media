@@ -113,10 +113,13 @@ def check_proxy(proxy_url):
         else:
             return False
 
-def fetch_status(component_id):
-    r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + component_id, \
+def fetch_from_page():
+    r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components', \
         headers = {'Authorization': 'OAuth ' + API_key})
-    return r.json()['status']
+    statuses = {}
+    for component_detail in r.json():
+        statuses[component_detail['id']] = component_detail['status']
+    return statuses
 
 def announce_outage(component_id):
     r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + component_id, \
@@ -144,8 +147,9 @@ status_trans = {
     'operational': True,
     'major_outage': False,
 }
+init_statuses = fetch_from_page()
 for component in statuses:
-    statuses[component] = status_trans[fetch_status(components_id[component])]
+    statuses[component] = status_trans[init_statuses[components_id[component]]]
 
 listofthreads = []
 listofstatuses = [statuses]

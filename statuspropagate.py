@@ -47,9 +47,7 @@ while True:
         if diff[component] == True:
             if new_statuses[component] == False:
                 IFTTT_announce_outage(components_id[component])
-                print("Outage Announced.")
             else:
                 IFTTT_announce_restoration(components_id[component])
-                print("Restoration Announced.")
 
     time.sleep(10)
