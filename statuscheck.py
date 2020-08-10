@@ -119,11 +119,9 @@ def fetch_status(component_id):
     return r.json()['status']
 
 def announce_outage(component_id):
-    r1 = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + component_id, \
+    r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + component_id, \
         headers = {'Authorization': 'OAuth ' + API_key}, \
         data = json.dumps({"component": {"status": "major_outage"}}))
-    r2 = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_outage/with/key/' + IFTTT_key, \
-         data = {"value1": r1.json()['name']})
 
 def announce_restoration(to_announce):
     time.sleep(30)
@@ -133,11 +131,9 @@ def announce_restoration(to_announce):
         for component in list(to_announce):
             if statuses[component]:
                 print('[Announcing] Announcing restoration of ' + component.title() + '.')
-                r1 = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + components_id[component], \
+                r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + components_id[component], \
                     headers = {'Authorization': 'OAuth ' + API_key}, \
                     data = json.dumps({"component": {"status": "operational"}}))
-                r2 = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_restoration/with/key/' + IFTTT_key, \
-                     data = {"value1": r1.json()['name']})
                 to_announce.remove(component)
     finally:
         lock.release()
