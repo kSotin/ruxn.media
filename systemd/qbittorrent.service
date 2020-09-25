@@ -9,7 +9,7 @@ Requires=mergerfs.service
 # if you have systemd < 240 (Ubuntu 18.10 and earlier, for example), you probably want to use Type=simple instead
 Type=simple
 # change user as needed
-User=qbtuser
+User=ruxn
 # notice that no -d flag needed
 ExecStart=/usr/bin/qbittorrent-nox
 # uncomment this for versions of qBittorrent < 4.2.0 to set the maximum number of open files to unlimited
