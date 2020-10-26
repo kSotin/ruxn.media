@@ -252,4 +252,4 @@ while True:
     announcer = threading.Thread(target=announce_restoration, args=(to_announce,))
     announcer.start()
 
-    time.sleep(15)
+    time.sleep(60)
