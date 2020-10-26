@@ -231,7 +231,8 @@ while True:
                     statuses[service] = True
                     to_announce.add(service)
     # Reset own status
-    statuses[myself] = True
+    if 'myself' in locals() or 'myself' in globals():
+        statuses[myself] = True
     # Check proxies
     for proxy in proxies_url:
         if not check_proxy(proxies_url[proxy]) and statuses[proxy]:
