@@ -51,8 +51,9 @@ new_statuses = statuses_full.copy()
 
 while True:
     statuses = new_statuses.copy()
+    new_page_info = fetch_from_page()
     for component in statuses_full:
-        new_statuses[component] = status_trans[fetch_from_page()[0][components_id[component]]]
+        new_statuses[component] = status_trans[new_page_info[0][components_id[component]]]
         diff[component] = new_statuses[component] ^ statuses[component]
 
     # propagate
