@@ -6,7 +6,7 @@ if [[ "`pidof -x $(basename $0) -o %PPID`" ]]; then exit; fi
 
 RCLONE_POLL_INTERVAL=15
 THRESHOLD=60
-DRIVE=/dev/sda3
+DRIVE=/dev/vda1
 LOCAL_MOVIES_DIR="/home/ruxn/local/Movies"
 LOCAL_TVSHOWS_DIR="/home/ruxn/local/TV Shows"
 CLOUD_MOVIES_DIR="gcrypt:Movies"
