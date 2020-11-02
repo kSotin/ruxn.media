@@ -52,7 +52,7 @@ def check_plex(plex_url):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
     try:
-        r = s.get('https://' + plex_url, headers={'Host': 'plex.ruxn.media'})
+        r = s.get('https://' + plex_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
     except requests.exceptions.RequestException:
         return False
     else:
@@ -63,7 +63,7 @@ def check_plex(plex_url):
 
 def check_plex_own(port):
     try:
-        r = requests.get('http://127.0.0.1:' + port)
+        r = requests.get('http://127.0.0.1:' + port, timeout=5)
     except requests.exceptions.RequestException:
         return False
     else:
@@ -74,7 +74,7 @@ def check_plex_own(port):
 
 def check_site(site_url):
     try:
-        r = requests.get(site_url)
+        r = requests.get(site_url, timeout=5)
     except requests.exceptions.RequestException:
         return False
     else:
@@ -85,7 +85,7 @@ def check_site(site_url):
 
 def check_site_own(port):
     try:
-        r = requests.get('http://127.0.0.1:' + port)
+        r = requests.get('http://127.0.0.1:' + port, timeout=5)
     except requests.exceptions.RequestException:
         return False
     else:
@@ -105,7 +105,7 @@ def check_proxy(proxy_url):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
     try:
-        r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'})
+        r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
     except requests.exceptions.RequestException:
         return False
     else:
@@ -116,7 +116,7 @@ def check_proxy(proxy_url):
 
 def fetch_from_page():
     r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components', \
-        headers = {'Authorization': 'OAuth ' + API_key})
+        headers = {'Authorization': 'OAuth ' + API_key}, timeout=5)
     statuses = {}
     for component_detail in r.json():
         statuses[component_detail['id']] = component_detail['status']
@@ -125,7 +125,7 @@ def fetch_from_page():
 def announce_outage(component_id):
     r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + component_id, \
         headers = {'Authorization': 'OAuth ' + API_key}, \
-        data = json.dumps({"component": {"status": "major_outage"}}))
+        data = json.dumps({"component": {"status": "major_outage"}}), timeout=5)
 
 def announce_restoration(to_announce):
     time.sleep(30)
@@ -137,7 +137,7 @@ def announce_restoration(to_announce):
                 print('[Announcing] Announcing restoration of ' + component.title() + '.')
                 r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + components_id[component], \
                     headers = {'Authorization': 'OAuth ' + API_key}, \
-                    data = json.dumps({"component": {"status": "operational"}}))
+                    data = json.dumps({"component": {"status": "operational"}}), timeout=5)
                 to_announce.remove(component)
     finally:
         lock.release()
