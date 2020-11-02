@@ -14,6 +14,7 @@ def send_statuses(statuses, sender_port, receiver_addr, receiver_port):
     sender_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sender_socket.bind(('', sender_port))
     sender_socket.sendto(data.encode(), (receiver_addr, receiver_port))
+    print('[Syncing] Sent statuses to ' + str(receiver_addr) + '.')
 
 def receive_statuses(receiver_port, list, index, sender_name, isalive):
     receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
