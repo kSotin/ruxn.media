@@ -51,48 +51,60 @@ def merge_statuses(merge_to, merge_from):
 def check_plex(plex_url):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
-    try:
-        r = s.get('https://' + plex_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
-    except requests.exceptions.RequestException:
-        return False
-    else:
-        if r.status_code == 401:
-            return True
+    i = 0
+    while i < 3:
+        try:
+            r = s.get('https://' + plex_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
+        except requests.exceptions.RequestException:
+            i += 1
         else:
-            return False
+            if r.status_code == 401:
+                return True
+            else:
+                return False
+    return False
 
 def check_plex_own(port):
-    try:
-        r = requests.get('http://127.0.0.1:' + port, timeout=5)
-    except requests.exceptions.RequestException:
-        return False
-    else:
-        if r.status_code == 401:
-            return True
+    i = 0
+    while i < 3:
+        try:
+            r = requests.get('http://127.0.0.1:' + port, timeout=5)
+        except requests.exceptions.RequestException:
+            i += 1
         else:
-            return False
+            if r.status_code == 401:
+                return True
+            else:
+                return False
+    return False
 
 def check_site(site_url):
-    try:
-        r = requests.get(site_url, timeout=5)
-    except requests.exceptions.RequestException:
-        return False
-    else:
-        if r.status_code == 200:
-            return True
+    i = 0
+    while i < 3:
+        try:
+            r = requests.get(site_url, timeout=5)
+        except requests.exceptions.RequestException:
+            i += 1
         else:
-            return False
+            if r.status_code == 200:
+                return True
+            else:
+                return False
+    return False
 
 def check_site_own(port):
-    try:
-        r = requests.get('http://127.0.0.1:' + port, timeout=5)
-    except requests.exceptions.RequestException:
-        return False
-    else:
-        if r.status_code == 200:
-            return True
+    i = 0
+    while i < 3:
+        try:
+            r = requests.get('http://127.0.0.1:' + port, timeout=5)
+        except requests.exceptions.RequestException:
+            i += 1
         else:
-            return False
+            if r.status_code == 200:
+                return True
+            else:
+                return False
+    return False
 
 def check_back_end(service):
     return_code = subprocess.call('systemctl is-active ' + service, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
@@ -104,15 +116,18 @@ def check_back_end(service):
 def check_proxy(proxy_url):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
-    try:
-        r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
-    except requests.exceptions.RequestException:
-        return False
-    else:
-        if r.status_code == 401 or r.status_code == 502:
-            return True
+    i = 0
+    while i < 3:
+        try:
+            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
+        except requests.exceptions.RequestException:
+            i += 1
         else:
-            return False
+            if r.status_code == 401 or r.status_code == 502:
+                return True
+            else:
+                return False
+    return False
 
 def fetch_from_page():
     r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components', \
