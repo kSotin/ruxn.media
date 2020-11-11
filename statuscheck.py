@@ -6,7 +6,9 @@ import json
 from requests_toolbelt.adapters import host_header_ssl
 import socket
 import sys
+import getopt
 import subprocess
+
 
 # For status syncing
 def send_statuses(statuses, sender_port, receiver_addr, receiver_port):
@@ -15,6 +17,7 @@ def send_statuses(statuses, sender_port, receiver_addr, receiver_port):
     sender_socket.bind(('', sender_port))
     sender_socket.sendto(data.encode(), (receiver_addr, receiver_port))
     print('[Syncing] Sent statuses to (' + str(receiver_addr) + ', ' + str(receiver_port) + ').')
+
 
 def receive_statuses(receiver_port, list, index, sender_name, isalive):
     receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -26,6 +29,7 @@ def receive_statuses(receiver_port, list, index, sender_name, isalive):
         isalive[index] = True
         print('[Syncing] Received statuses from ' + str(sender_addr) + '.')
         list[index] = json.loads(data.decode())
+
 
 def receive_timeout_reset(list, index, sender_name, isalive):
     clock = 0
@@ -42,10 +46,12 @@ def receive_timeout_reset(list, index, sender_name, isalive):
         time.sleep(1)
         clock += 1
 
+
 def merge_statuses(merge_to, merge_from):
     for statuses in merge_from:
         for component in statuses:
             merge_to[component] = merge_to[component] and statuses[component]
+
 
 # For status checking
 def check_plex(plex_url):
@@ -64,6 +70,7 @@ def check_plex(plex_url):
                 return False
     return False
 
+
 def check_plex_own(port):
     i = 0
     while i < 10:
@@ -77,6 +84,7 @@ def check_plex_own(port):
             else:
                 return False
     return False
+
 
 def check_site(site_url):
     i = 0
@@ -92,6 +100,7 @@ def check_site(site_url):
                 return False
     return False
 
+
 def check_site_own(port):
     i = 0
     while i < 10:
@@ -106,12 +115,14 @@ def check_site_own(port):
                 return False
     return False
 
+
 def check_back_end(service):
     return_code = subprocess.call('systemctl is-active ' + service, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
     if return_code == 0:
         return True
     else:
         return False
+
 
 def check_proxy(proxy_url):
     s = requests.Session()
@@ -129,6 +140,7 @@ def check_proxy(proxy_url):
                 return False
     return False
 
+
 def fetch_from_page():
     r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components', \
         headers = {'Authorization': 'OAuth ' + API_key}, timeout=5)
@@ -137,10 +149,12 @@ def fetch_from_page():
         statuses[component_detail['id']] = component_detail['status']
     return statuses
 
+
 def announce_outage(component_id):
     r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + component_id, \
         headers = {'Authorization': 'OAuth ' + API_key}, \
         data = json.dumps({"component": {"status": "major_outage"}}), timeout=5)
+
 
 def announce_restoration(to_announce):
     time.sleep(30)
@@ -157,66 +171,44 @@ def announce_restoration(to_announce):
     finally:
         lock.release()
 
-# main
-# Initialize statuses
-status_trans = {
-    'operational': True,
-    'major_outage': False,
-}
-init_statuses = fetch_from_page()
-for component in statuses:
-    statuses[component] = status_trans[init_statuses[components_id[component]]]
 
-listofthreads = []
-listofstatuses = [statuses]
-isalive = [True]
-indexofstatuses = 1
-to_announce = set()
-lock = threading.Lock()
-for checker in sync_from_port:
-    listofstatuses.append(statuses.copy())
-    listofthreads.append(threading.Thread(target=receive_statuses, name=checker, args=(sync_from_port[checker], listofstatuses, indexofstatuses, checker, isalive)))
-    listofthreads[-1].start()
-    isalive.append(False)
-    indexofstatuses += 1
+def main(argv):
+    # Initialize statuses
+    status_trans = {
+        'operational': True,
+        'major_outage': False,
+    }
+    init_statuses = fetch_from_page()
+    for component in statuses:
+        statuses[component] = status_trans[init_statuses[components_id[component]]]
 
-if '-h' in sys.argv or '--host' in sys.argv:
-    isHost = True
-else:
-    isHost = False
+    listofthreads = []
+    listofstatuses = [statuses]
+    isalive = [True]
+    indexofstatuses = 1
+    to_announce = set()
+    lock = threading.Lock()
+    for checker in sync_from_port:
+        listofstatuses.append(statuses.copy())
+        listofthreads.append(threading.Thread(target=receive_statuses, name=checker, args=(sync_from_port[checker], listofstatuses, indexofstatuses, checker, isalive)))
+        listofthreads[-1].start()
+        isalive.append(False)
+        indexofstatuses += 1
 
-if '-w' in sys.argv or '--wall' in sys.argv:
-    inWall = True
-else:
-    inWall = False
+    try:
+        opts, args = getopt.getopt(argv[1:], "t:", ["tier="])
+    except getopt.GetoptError:
+        print('Error: ' + argv[0] + ' -t <tier>')
+        print('       ' + argv[0] + ' --tier=<tier>')
+        sys.exit(2)
+    else:
+        for opt, arg in opts:
+            if opt in ("-t", "--tier"):
+                tier = int(arg)
 
-while True:
-    if inWall == False:
-        if isHost == False:
-            # Check plex
-            if not check_plex(plex_url) and statuses['plex media server']:
-                print('[Outage] An outage detected of PMS.')
-                announce_outage(components_id['plex media server'])
-                statuses['plex media server'] = False
-            if check_plex(plex_url) and not statuses['plex media server']:
-                print('[Restoration] Restoration from outage detected of PMS.')
-                statuses['plex media server'] = True
-                to_announce.add('plex media server')
-            # Check sites
-            for site in sites_url:
-                if not check_site(sites_url[site]) and statuses[site]:
-                    print('[Outage] An outage detected of ' + site.title() + '.')
-                    announce_outage(components_id[site])
-                    statuses[site] = False
-                if check_site(sites_url[site]) and not statuses[site]:
-                    print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
-                    statuses[site] = True
-                    to_announce.add(site)
-            # Check back-end services
-            for service in services:
-                if not statuses[service]:
-                    print('[Restoration] Restoration from outage detected of ' + service + '.')
-        else:
+    while True:
+        # Host
+        if tier == 0:
             # Check own-hosted plex
             if not check_plex_own(plex_port) and statuses['plex media server']:
                 print('[Outage] An outage detected of PMS.')
@@ -246,26 +238,63 @@ while True:
                     print('[Restoration] Restoration from outage detected of ' + service + '.')
                     statuses[service] = True
                     to_announce.add(service)
-    # Reset own status
-    if 'myself' in locals() or 'myself' in globals():
-        statuses[myself] = True
-    # Check proxies
-    for proxy in proxies_url:
-        if not check_proxy(proxies_url[proxy]) and statuses[proxy]:
-            print('[Outage] An outage detected of ' + proxy.title() + '.')
-            announce_outage(components_id[proxy])
-            statuses[proxy] = False
-        if check_proxy(proxies_url[proxy]) and not statuses[proxy]:
-            print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
-            statuses[proxy] = True
-            to_announce.add(proxy)
-    # Sync statuses
-    for checker in sync_receivers_port:
-        send_statuses(statuses, sync_sender_port, checkers_addr[checker], sync_receivers_port[checker])
-        # time.sleep(5)
-        # send_statuses(statuses, sync_sender_port, checkers_addr[checker], sync_receivers_port[checker])
-    # Announce restoration
-    announcer = threading.Thread(target=announce_restoration, args=(to_announce,))
-    announcer.start()
+        # Tier-1 proxy
+        elif tier == 1:
+            # Check plex
+            if not check_plex(plex_url) and statuses['plex media server']:
+                print('[Outage] An outage detected of PMS.')
+                announce_outage(components_id['plex media server'])
+                statuses['plex media server'] = False
+            if check_plex(plex_url) and not statuses['plex media server']:
+                print('[Restoration] Restoration from outage detected of PMS.')
+                statuses['plex media server'] = True
+                to_announce.add('plex media server')
+            # Check sites
+            for site in sites_url:
+                if not check_site(sites_url[site]) and statuses[site]:
+                    print('[Outage] An outage detected of ' + site.title() + '.')
+                    announce_outage(components_id[site])
+                    statuses[site] = False
+                if check_site(sites_url[site]) and not statuses[site]:
+                    print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
+                    statuses[site] = True
+                    to_announce.add(site)
+            # Check proxies
+            for proxy in proxies_url:
+                if not check_proxy(proxies_url[proxy]) and statuses[proxy]:
+                    print('[Outage] An outage detected of ' + proxy.title() + '.')
+                    announce_outage(components_id[proxy])
+                    statuses[proxy] = False
+                if check_proxy(proxies_url[proxy]) and not statuses[proxy]:
+                    print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
+                    statuses[proxy] = True
+                    to_announce.add(proxy)
+        else:
+            # Check proxies
+            for proxy in proxies_url:
+                if not check_proxy(proxies_url[proxy]) and statuses[proxy]:
+                    print('[Outage] An outage detected of ' + proxy.title() + '.')
+                    announce_outage(components_id[proxy])
+                    statuses[proxy] = False
+                if check_proxy(proxies_url[proxy]) and not statuses[proxy]:
+                    print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
+                    statuses[proxy] = True
+                    to_announce.add(proxy)
+        # Reset own status
+        if 'myself' in locals() or 'myself' in globals():
+            statuses[myself] = True
+        # Sync statuses
+        if tier != 0:
+            for checker in sync_receivers_port:
+                send_statuses(statuses, sync_sender_port, checkers_addr[checker], sync_receivers_port[checker])
+                # time.sleep(5)
+                # send_statuses(statuses, sync_sender_port, checkers_addr[checker], sync_receivers_port[checker])
+        # Announce restoration
+        announcer = threading.Thread(target=announce_restoration, args=(to_announce,))
+        announcer.start()
 
-    time.sleep(60)
+        time.sleep(60)
+
+
+if __name__ == "__main__":
+   main(sys.argv)
