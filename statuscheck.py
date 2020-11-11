@@ -182,18 +182,19 @@ def main(argv):
     for component in statuses:
         statuses[component] = status_trans[init_statuses[components_id[component]]]
 
-    listofthreads = []
-    listofstatuses = [statuses]
-    isalive = [True]
-    indexofstatuses = 1
-    to_announce = set()
-    lock = threading.Lock()
-    for checker in sync_from_port:
-        listofstatuses.append(statuses.copy())
-        listofthreads.append(threading.Thread(target=receive_statuses, name=checker, args=(sync_from_port[checker], listofstatuses, indexofstatuses, checker, isalive)))
-        listofthreads[-1].start()
-        isalive.append(False)
-        indexofstatuses += 1
+    if tier != 0:
+        listofthreads = []
+        listofstatuses = [statuses]
+        isalive = [True]
+        indexofstatuses = 1
+        to_announce = set()
+        lock = threading.Lock()
+        for checker in sync_from_port:
+            listofstatuses.append(statuses.copy())
+            listofthreads.append(threading.Thread(target=receive_statuses, name=checker, args=(sync_from_port[checker], listofstatuses, indexofstatuses, checker, isalive)))
+            listofthreads[-1].start()
+            isalive.append(False)
+            indexofstatuses += 1
 
     try:
         opts, args = getopt.getopt(argv[1:], "t:", ["tier="])
