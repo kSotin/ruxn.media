@@ -58,7 +58,7 @@ def merge_statuses(merge_to, merge_from):
 #     s = requests.Session()
 #     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
 #     i = 0
-#     while i < 10:
+#     while i < 2:
 #         try:
 #             r = s.get('https://' + plex_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
 #         except requests.exceptions.RequestException:
@@ -73,7 +73,7 @@ def merge_statuses(merge_to, merge_from):
 
 # def check_plex_own(port):
 #     i = 0
-#     while i < 10:
+#     while i < 2:
 #         try:
 #             r = requests.get('http://127.0.0.1:' + port, timeout=5)
 #         except requests.exceptions.RequestException:
@@ -88,7 +88,7 @@ def merge_statuses(merge_to, merge_from):
 
 def check_site(site_url):
     i = 0
-    while i < 10:
+    while i < 2:
         try:
             r = requests.get(site_url, timeout=5)
         except requests.exceptions.RequestException:
@@ -103,7 +103,7 @@ def check_site(site_url):
 
 # def check_site_own(port):
 #     i = 0
-#     while i < 10:
+#     while i < 2:
 #         try:
 #             r = requests.get('http://127.0.0.1:' + port, timeout=5)
 #         except requests.exceptions.RequestException:
@@ -128,7 +128,7 @@ def check_proxy(proxy_url):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
     i = 0
-    while i < 10:
+    while i < 2:
         try:
             r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
         except requests.exceptions.RequestException:
