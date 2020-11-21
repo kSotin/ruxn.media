@@ -251,32 +251,32 @@ def main(argv):
         elif tier == 1:
             # Check sites
             for site in sites_url:
-                if not check_site(sites_url[site]) and statuses[site]:
+                if not check_site(sites_url[site], 0) and statuses[site]:
                     print('[Outage] An outage detected of ' + site.title() + '.')
                     announce_outage(components_id[site])
                     statuses[site] = False
-                if check_site(sites_url[site]) and not statuses[site]:
+                if check_site(sites_url[site], 1) and not statuses[site]:
                     print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
                     statuses[site] = True
                     to_announce.add(site)
             # Check proxies
             for proxy in proxies_url:
-                if not check_proxy(proxies_url[proxy]) and statuses[proxy]:
+                if not check_proxy(proxies_url[proxy], 0) and statuses[proxy]:
                     print('[Outage] An outage detected of ' + proxy.title() + '.')
                     announce_outage(components_id[proxy])
                     statuses[proxy] = False
-                if check_proxy(proxies_url[proxy]) and not statuses[proxy]:
+                if check_proxy(proxies_url[proxy], 1) and not statuses[proxy]:
                     print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
                     statuses[proxy] = True
                     to_announce.add(proxy)
         else:
             # Check proxies
             for proxy in proxies_url:
-                if not check_proxy(proxies_url[proxy]) and statuses[proxy]:
+                if not check_proxy(proxies_url[proxy], 0) and statuses[proxy]:
                     print('[Outage] An outage detected of ' + proxy.title() + '.')
                     announce_outage(components_id[proxy])
                     statuses[proxy] = False
-                if check_proxy(proxies_url[proxy]) and not statuses[proxy]:
+                if check_proxy(proxies_url[proxy], 1) and not statuses[proxy]:
                     print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
                     statuses[proxy] = True
                     to_announce.add(proxy)
