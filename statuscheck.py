@@ -54,15 +54,18 @@ def merge_statuses(merge_to, merge_from):
 
 
 # For status checking
-# def check_plex(plex_url):
+# def check_plex(plex_url, isDown):
 #     s = requests.Session()
 #     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
 #     i = 0
-#     while i < 4:
+#     while i < 20:
 #         try:
 #             r = s.get('https://' + plex_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
 #         except requests.exceptions.RequestException:
-#             i += 1
+#             if isDown:
+#                 return False
+#             else
+#                 i += 1
 #         else:
 #             if r.status_code == 401:
 #                 return True
@@ -71,13 +74,16 @@ def merge_statuses(merge_to, merge_from):
 #     return False
 
 
-# def check_plex_own(port):
+# def check_plex_own(port, isDown):
 #     i = 0
-#     while i < 4:
+#     while i < 20:
 #         try:
 #             r = requests.get('http://127.0.0.1:' + port, timeout=5)
 #         except requests.exceptions.RequestException:
-#             i += 1
+#             if isDown:
+#                 return False
+#             else:
+#                 i += 1
 #         else:
 #             if r.status_code == 401:
 #                 return True
@@ -86,13 +92,16 @@ def merge_statuses(merge_to, merge_from):
 #     return False
 
 
-def check_site(site_url):
+def check_site(site_url, isDown):
     i = 0
-    while i < 4:
+    while i < 20:
         try:
             r = requests.get(site_url, timeout=5)
         except requests.exceptions.RequestException:
-            i += 1
+            if isDown:
+                return False
+            else:
+                i += 1
         else:
             if r.status_code == 200:
                 return True
@@ -101,13 +110,16 @@ def check_site(site_url):
     return False
 
 
-# def check_site_own(port):
+# def check_site_own(port, isDown):
 #     i = 0
-#     while i < 4:
+#     while i < 20:
 #         try:
 #             r = requests.get('http://127.0.0.1:' + port, timeout=5)
 #         except requests.exceptions.RequestException:
-#             i += 1
+#             if isDown:
+#                 return False
+#             else:
+#                 i += 1
 #         else:
 #             if r.status_code == 200:
 #                 return True
@@ -124,15 +136,18 @@ def check_back_end(service):
         return False
 
 
-def check_proxy(proxy_url):
+def check_proxy(proxy_url, isDown):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
     i = 0
-    while i < 4:
+    while i < 20:
         try:
             r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
         except requests.exceptions.RequestException:
-            i += 1
+            if isDown:
+                return False
+            else:
+                i += 1
         else:
             if r.status_code == 401 or r.status_code == 502:
                 return True
