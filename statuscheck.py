@@ -37,7 +37,7 @@ def receive_timeout_reset(list, index, sender_name, isalive):
         if isalive[index]:
             isalive[index] = False
             clock = 0
-        if clock == 300:
+        if clock == 600:
             print('[Checker Death] ' + sender_name.upper() + ' is dead.')
             for component in list[index]:
                 list[index][component] = True
@@ -54,49 +54,12 @@ def merge_statuses(merge_to, merge_from):
 
 
 # For status checking
-# def check_plex(plex_url, isDown):
-#     s = requests.Session()
-#     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
-#     i = 0
-#     while i < 20:
-#         try:
-#             r = s.get('https://' + plex_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
-#         except requests.exceptions.RequestException:
-#             if isDown:
-#                 return False
-#             else
-#                 i += 1
-#         else:
-#             if r.status_code == 401:
-#                 return True
-#             else:
-#                 return False
-#     return False
-
-
-# def check_plex_own(port, isDown):
-#     i = 0
-#     while i < 20:
-#         try:
-#             r = requests.get('http://127.0.0.1:' + port, timeout=5)
-#         except requests.exceptions.RequestException:
-#             if isDown:
-#                 return False
-#             else:
-#                 i += 1
-#         else:
-#             if r.status_code == 401:
-#                 return True
-#             else:
-#                 return False
-#     return False
-
 
 def check_site(site_url, isDown):
     i = 0
-    while i < 20:
+    while i < 2:
         try:
-            r = requests.get(site_url, timeout=5)
+            r = requests.get(site_url)
         except requests.exceptions.RequestException:
             if isDown:
                 return False
@@ -108,24 +71,6 @@ def check_site(site_url, isDown):
             else:
                 return False
     return False
-
-
-# def check_site_own(port, isDown):
-#     i = 0
-#     while i < 20:
-#         try:
-#             r = requests.get('http://127.0.0.1:' + port, timeout=5)
-#         except requests.exceptions.RequestException:
-#             if isDown:
-#                 return False
-#             else:
-#                 i += 1
-#         else:
-#             if r.status_code == 200:
-#                 return True
-#             else:
-#                 return False
-#     return False
 
 
 def check_back_end(service):
@@ -140,9 +85,9 @@ def check_proxy(proxy_url, isDown):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
     i = 0
-    while i < 20:
+    while i < 2:
         try:
-            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=5)
+            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'})
         except requests.exceptions.RequestException:
             if isDown:
                 return False
@@ -158,7 +103,7 @@ def check_proxy(proxy_url, isDown):
 
 def fetch_from_page():
     r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components', \
-        headers = {'Authorization': 'OAuth ' + API_key}, timeout=5)
+        headers = {'Authorization': 'OAuth ' + API_key})
     statuses = {}
     for component_detail in r.json():
         statuses[component_detail['id']] = component_detail['status']
@@ -168,7 +113,7 @@ def fetch_from_page():
 def announce_outage(component_id):
     r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + component_id, \
         headers = {'Authorization': 'OAuth ' + API_key}, \
-        data = json.dumps({"component": {"status": "major_outage"}}), timeout=5)
+        data = json.dumps({"component": {"status": "major_outage"}}))
 
 
 def announce_restoration(to_announce, listofstatuses):
@@ -181,7 +126,7 @@ def announce_restoration(to_announce, listofstatuses):
                 print('[Announcing] Announcing restoration of ' + component.title() + '.')
                 r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + components_id[component], \
                     headers = {'Authorization': 'OAuth ' + API_key}, \
-                    data = json.dumps({"component": {"status": "operational"}}), timeout=5)
+                    data = json.dumps({"component": {"status": "operational"}}))
                 to_announce.remove(component)
     finally:
         lock.release()
@@ -251,35 +196,41 @@ def main(argv):
         elif tier == 1:
             # Check sites
             for site in sites_url:
-                if not check_site(sites_url[site], 0) and statuses[site]:
-                    print('[Outage] An outage detected of ' + site.title() + '.')
-                    announce_outage(components_id[site])
-                    statuses[site] = False
-                if check_site(sites_url[site], 1) and not statuses[site]:
-                    print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
-                    statuses[site] = True
-                    to_announce.add(site)
+                if statuses[site]:
+                    if check_site(sites_url[site], False):
+                        print('[Outage] An outage detected of ' + site.title() + '.')
+                        announce_outage(components_id[site])
+                        statuses[site] = False
+                if !statuses[site]:
+                    if check_site(sites_url[site], True):
+                        print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
+                        statuses[site] = True
+                        to_announce.add(site)
             # Check proxies
             for proxy in proxies_url:
-                if not check_proxy(proxies_url[proxy], 0) and statuses[proxy]:
-                    print('[Outage] An outage detected of ' + proxy.title() + '.')
-                    announce_outage(components_id[proxy])
-                    statuses[proxy] = False
-                if check_proxy(proxies_url[proxy], 1) and not statuses[proxy]:
-                    print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
-                    statuses[proxy] = True
-                    to_announce.add(proxy)
+                if statuses[proxy]:
+                    if check_proxy(proxies_url[proxy], False):
+                        print('[Outage] An outage detected of ' + proxy.title() + '.')
+                        announce_outage(components_id[proxy])
+                        statuses[proxy] = False
+                if !statuses[proxy]:
+                    if check_proxy(proxies_url[proxy], True):
+                        print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
+                        statuses[proxy] = True
+                        to_announce.add(proxy)
         else:
             # Check proxies
             for proxy in proxies_url:
-                if not check_proxy(proxies_url[proxy], 0) and statuses[proxy]:
-                    print('[Outage] An outage detected of ' + proxy.title() + '.')
-                    announce_outage(components_id[proxy])
-                    statuses[proxy] = False
-                if check_proxy(proxies_url[proxy], 1) and not statuses[proxy]:
-                    print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
-                    statuses[proxy] = True
-                    to_announce.add(proxy)
+                if statuses[proxy]:
+                    if check_proxy(proxies_url[proxy], False):
+                        print('[Outage] An outage detected of ' + proxy.title() + '.')
+                        announce_outage(components_id[proxy])
+                        statuses[proxy] = False
+                if !statuses[proxy]:
+                    if check_proxy(proxies_url[proxy], True):
+                        print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
+                        statuses[proxy] = True
+                        to_announce.add(proxy)
         # Reset own status
         if 'myself' in locals() or 'myself' in globals():
             statuses[myself] = True
