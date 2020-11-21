@@ -201,7 +201,7 @@ def main(argv):
                         print('[Outage] An outage detected of ' + site.title() + '.')
                         announce_outage(components_id[site])
                         statuses[site] = False
-                if !statuses[site]:
+                if not statuses[site]:
                     if check_site(sites_url[site], True):
                         print('[Restoration] Restoration from outage detected of ' + site.title() + '.')
                         statuses[site] = True
@@ -213,7 +213,7 @@ def main(argv):
                         print('[Outage] An outage detected of ' + proxy.title() + '.')
                         announce_outage(components_id[proxy])
                         statuses[proxy] = False
-                if !statuses[proxy]:
+                if not statuses[proxy]:
                     if check_proxy(proxies_url[proxy], True):
                         print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
                         statuses[proxy] = True
@@ -226,7 +226,7 @@ def main(argv):
                         print('[Outage] An outage detected of ' + proxy.title() + '.')
                         announce_outage(components_id[proxy])
                         statuses[proxy] = False
-                if !statuses[proxy]:
+                if not statuses[proxy]:
                     if check_proxy(proxies_url[proxy], True):
                         print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
                         statuses[proxy] = True
