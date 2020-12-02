@@ -231,9 +231,10 @@ def main(argv):
                         print('[Restoration] Restoration from outage detected of ' + proxy.title() + '.')
                         statuses[proxy] = True
                         to_announce.add(proxy)
-        # Reset own status
-        if 'myself' in locals() or 'myself' in globals():
-            statuses[myself] = True
+        # Reset statuses
+        if 'skip' in locals() or 'skip' in globals():
+            for component in skip:
+                statuses[component] = True
         # Sync statuses - sender
         if tier != 0:
             for checker in sync_receivers_port:
