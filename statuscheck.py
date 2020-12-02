@@ -197,7 +197,7 @@ def main(argv):
             # Check sites
             for site in sites_url:
                 if statuses[site]:
-                    if check_site(sites_url[site], False):
+                    if not check_site(sites_url[site], False):
                         print('[Outage] An outage detected of ' + site.title() + '.')
                         announce_outage(components_id[site])
                         statuses[site] = False
@@ -209,7 +209,7 @@ def main(argv):
             # Check proxies
             for proxy in proxies_url:
                 if statuses[proxy]:
-                    if check_proxy(proxies_url[proxy], False):
+                    if not check_proxy(proxies_url[proxy], False):
                         print('[Outage] An outage detected of ' + proxy.title() + '.')
                         announce_outage(components_id[proxy])
                         statuses[proxy] = False
@@ -222,7 +222,7 @@ def main(argv):
             # Check proxies
             for proxy in proxies_url:
                 if statuses[proxy]:
-                    if check_proxy(proxies_url[proxy], False):
+                    if not check_proxy(proxies_url[proxy], False):
                         print('[Outage] An outage detected of ' + proxy.title() + '.')
                         announce_outage(components_id[proxy])
                         statuses[proxy] = False
