@@ -1,73 +1,53 @@
 #!/bin/bash
 set -e
 
-PLEX_ARCHIVE=/home/ruxn/plexbackup.tar
-RADARR_ARCHIVE=/home/ruxn/radarrbackup.tar
-SONARR_ARCHIVE=/home/ruxn/sonarrbackup.tar
+PLEX_LOCAL="/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases"
+RADARR_LOCAL=/home/ruxn/.config/Radarr/Backups/scheduled
+SONARR_LOCAL=/var/lib/sonarr/Backups/scheduled
+BAZARR_LOCAL=/opt/bazarr/data
+PLEX_CLOUD=gdrive:backups/plexbackups
+RADARR_CLOUD=gdrive:backups/radarrbackups
+SONARR_CLOUD=gdrive:backups/sonarrbackups
+BACKUPS_CLOUD=gdrive:backups
 
-echo "Checking if Plex is running..."
-IS_PLEX_ACTIVE=$(systemctl is-active plexmediaserver) || :
-echo ${IS_PLEX_ACTIVE}
-echo "Checking if Radarr is running..."
-IS_RADARR_ACTIVE=$(systemctl is-active radarr) || :
-echo ${IS_RADARR_ACTIVE}
-echo "Checking if Sonarr is running..."
-IS_SONARR_ACTIVE=$(systemctl is-active sonarr) || :
-echo ${IS_SONARR_ACTIVE}
-echo
-if [ ${IS_PLEX_ACTIVE} = "active" ]
+echo "Appdata backup starting at $(date)"
+echo "Syncing cloud directories with local ones..."
+if [ -d "${PLEX_LOCAL}" -a "$(ls "${PLEX_LOCAL}")" ]
 then
-    echo "Stopping Plex Media Server..."
-    sudo systemctl stop plexmediaserver
-    echo "Plex Media Server stopped."
+    echo "Syncing PLEX backups..."
+    /usr/bin/rclone sync "${PLEX_LOCAL}" "${PLEX_CLOUD}" --log-level INFO
+else
+    echo "No archives found in local PLEX backup directory, skipping..."
+    echo
 fi
-if [ ${IS_RADARR_ACTIVE} = "active" ]
+if [ -d "${RADARR_LOCAL}" -a "$(ls "${RADARR_LOCAL}")" ]
 then
-    echo "Stopping Radarr..."
-    sudo systemctl stop radarr
-    echo "Radarr stopped."
+    echo "Syncing RADARR backups..."
+    /usr/bin/rclone sync "${RADARR_LOCAL}" "${RADARR_CLOUD}" --log-level INFO
+else
+    echo "No archives found in local RADARR backup directory, skipping..."
+    echo
 fi
-if [ ${IS_SONARR_ACTIVE} = "active" ]
+if [ -d "${SONARR_LOCAL}" -a "$(ls "${SONARR_LOCAL}")" ]
 then
-    echo "Stopping Sonarr..."
-    sudo systemctl stop sonarr
-    echo "Sonarr stopped."
+    echo "Syncing SONARR backups..."
+    /usr/bin/rclone sync "${SONARR_LOCAL}" "${SONARR_CLOUD}" --log-level INFO
+else
+    echo "No archives found in local SONARR backup directory, skipping..."
+    echo
 fi
-echo
-
-echo "Creating Plex's archive..."
-sudo tar -cf ${PLEX_ARCHIVE} -C "/var/lib/plexmediaserver/Library/Application Support" --exclude="Plex Media Server/Cache" "Plex Media Server"
-echo "Creating Radarr's archive..."
-sudo tar -cf ${RADARR_ARCHIVE} -C "/home/ruxn/.config" "Radarr"
-echo "Creating Sonarr's archive..."
-sudo tar -cf ${SONARR_ARCHIVE} -C "/home/ruxn/.config" "NzbDrone"
-echo
-
-echo "Starting rclone move..."
-/usr/bin/rclone move ${PLEX_ARCHIVE} gdrive_crypt:backups --log-level NOTICE
-/usr/bin/rclone move ${RADARR_ARCHIVE} gdrive_crypt:backups --log-level NOTICE
-/usr/bin/rclone move ${SONARR_ARCHIVE} gdrive_crypt:backups --log-level NOTICE
-echo "Backup completed at $(date)"
-echo
-
-if [ ${IS_PLEX_ACTIVE} = "active" ]
+if [ -d "${BAZARR_LOCAL}" ]
 then
-    echo "Starting Plex Media Server..."
-    sudo systemctl start plexmediaserver
-    echo "Plex Media Server started."
+    echo "Creating backup archive for BAZARR..."
+    sudo tar -cf /home/ruxn/bazarrbackup.tar -C "${BAZARR_LOCAL}" .
+    echo "Backup archive created for BAZARR."
+    echo "Uploading to cloud..."
+    /usr/bin/rclone move /home/ruxn/bazarrbackup.tar "${BACKUPS_CLOUD}" --log-level INFO
+else
+    echo "BAZARR appdata directory not found, skipping..."
+    echo
 fi
-if [ ${IS_RADARR_ACTIVE} = "active" ]
-then
-    echo "Starting Radarr..."
-    sudo systemctl start radarr
-    echo "Radarr started."
-fi
-if [ ${IS_SONARR_ACTIVE} = "active" ]
-then
-    echo "Starting Sonarr..."
-    sudo systemctl start sonarr
-    echo "Sonarr started."
-fi
+echo "Appdata Backup completed at $(date)"
 echo
 echo "============================================================================"
 echo
