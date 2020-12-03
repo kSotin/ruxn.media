@@ -7,7 +7,7 @@ Type=simple
 User=ruxn
 Restart=on-failure
 RestartSec=5
-ExecStart=/usr/bin/python3 -u /opt/bin/statuspropagate.py
+ExecStart=/usr/bin/python3 -u /opt/bin/statuspropagate.py --tier=0
 
 [Install]
 WantedBy=multi-user.target

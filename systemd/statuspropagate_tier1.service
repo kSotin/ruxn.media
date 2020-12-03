@@ -1,0 +1,13 @@
+[Unit]
+Description=Service Status Propagator
+After=network-online.target
+
+[Service]
+Type=simple
+User=ruxn
+Restart=on-failure
+RestartSec=5
+ExecStart=/usr/bin/python3 -u /opt/bin/statuspropagate.py --tier=1
+
+[Install]
+WantedBy=multi-user.target
