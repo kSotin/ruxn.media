@@ -18,12 +18,12 @@ def fetch_from_page():
     return statuses, names
 
 
-def IFTTT_announce_outage(component_id):
+def IFTTT_announce_outage(component_id, components_name):
     r = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_outage/with/key/' + IFTTT_key, \
         data = {"value1": components_name[component_id]})
 
 
-def IFTTT_announce_restoration(component_id):
+def IFTTT_announce_restoration(component_id, components_name):
     r = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_restoration/with/key/' + IFTTT_key, \
         data = {"value1": components_name[component_id]})
 
@@ -109,10 +109,10 @@ def main(argv):
             for component in statuses_full:
                 if diff[component] == True:
                     if new_statuses[component] == False:
-                        IFTTT_announce_outage(components_id[component])
+                        IFTTT_announce_outage(components_id[component], components_name)
                         print("[IFTTT] Outage announced of " + component.title() + ".")
                     else:
-                        IFTTT_announce_restoration(components_id[component])
+                        IFTTT_announce_restoration(components_id[component], components_name)
                         print("[IFTTT] Restoration announced of " + component.title() + ".")
 
             # switch to backup in-wall proxy
