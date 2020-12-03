@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-User=ruxn
+User=root
 Restart=on-failure
 RestartSec=5
 ExecStart=/usr/bin/python3 -u /opt/bin/statuspropagate.py --tier=2
