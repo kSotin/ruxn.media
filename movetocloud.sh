@@ -17,11 +17,14 @@ CLOUD_TVSHOWS_DIR="gcrypt:TV Shows"
 # IS_RADARR_ACTIVE=$(systemctl is-active radarr) || :
 # IS_SONARR_ACTIVE=$(systemctl is-active sonarr) || :
 
+echo "Move-to-cloud starting at $(date)"
 # Get disk usage
 USED=$(df -h | grep ${DRIVE} | awk '{print $5}' | sed 's/%//')
 if [ ${USED} -lt ${THRESHOLD} ]
 then
     echo "Disk usage: ${USED}%, skipping..."
+    echo
+    echo "============================================================================"
     echo
     exit
 fi
@@ -84,6 +87,8 @@ do
     else
         echo "${OLDEST} is not a directory, exiting..."
         echo
+        echo "============================================================================"
+        echo
         exit 1
     fi
     # Get disk usage
@@ -110,6 +115,7 @@ done
 #     sudo systemctl start sonarr
 #     echo "Sonarr started."
 # fi
+echo "Move-to-cloud finished at $(date)"
 echo
 echo "============================================================================"
 echo
