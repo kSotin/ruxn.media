@@ -7,7 +7,7 @@ Requires=mergerfs.service
 
 [Service]
 # if you have systemd < 240 (Ubuntu 18.10 and earlier, for example), you probably want to use Type=simple instead
-Type=exec
+Type=simple
 # change user as needed
 User=ruxn
 # notice that no -d flag needed
