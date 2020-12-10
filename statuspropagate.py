@@ -9,7 +9,7 @@ import subprocess
 
 def fetch_from_page():
     r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components', \
-        headers = {'Authorization': 'OAuth ' + API_key})
+        headers = {'Authorization': 'OAuth ' + API_key}, timeout=27.05)
     statuses = {}
     names = {}
     for component_detail in r.json():
@@ -20,12 +20,12 @@ def fetch_from_page():
 
 def IFTTT_announce_outage(component_id, components_name):
     r = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_outage/with/key/' + IFTTT_key, \
-        data = {"value1": components_name[component_id]})
+        data = {"value1": components_name[component_id]}, timeout=27.05)
 
 
 def IFTTT_announce_restoration(component_id, components_name):
     r = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_restoration/with/key/' + IFTTT_key, \
-        data = {"value1": components_name[component_id]})
+        data = {"value1": components_name[component_id]}, timeout=27.05)
 
 
 def switch_inwall_proxy(to_backup):
@@ -39,7 +39,7 @@ def switch_inwall_proxy(to_backup):
     else:
         data = '{"content":"' + inwall_main_ip + '"}'
     r = requests.patch('https://api.cloudflare.com/client/v4/zones/' + cloudflare_zoneid + \
-        '/dns_records/' + cloudflare_recordid , headers=headers, data=data)
+        '/dns_records/' + cloudflare_recordid , headers=headers, data=data, timeout=27.05)
 
 
 def switch_nginx_config(to_config):

@@ -59,7 +59,7 @@ def check_site(site_url, isDown):
     i = 0
     while i < 2:
         try:
-            r = requests.get(site_url)
+            r = requests.get(site_url, timeout=27.05)
         except requests.exceptions.RequestException:
             if isDown:
                 return False
@@ -87,7 +87,7 @@ def check_proxy(proxy_url, isDown):
     i = 0
     while i < 2:
         try:
-            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'})
+            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=27.05)
         except requests.exceptions.RequestException:
             if isDown:
                 return False
@@ -103,7 +103,7 @@ def check_proxy(proxy_url, isDown):
 
 def fetch_from_page():
     r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components', \
-        headers = {'Authorization': 'OAuth ' + API_key})
+        headers = {'Authorization': 'OAuth ' + API_key}, timeout=27.05)
     statuses = {}
     for component_detail in r.json():
         statuses[component_detail['id']] = component_detail['status']
@@ -113,7 +113,7 @@ def fetch_from_page():
 def announce_outage(component_id):
     r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + component_id, \
         headers = {'Authorization': 'OAuth ' + API_key}, \
-        data = json.dumps({"component": {"status": "major_outage"}}))
+        data = json.dumps({"component": {"status": "major_outage"}}), timeout=27.05)
 
 
 def announce_restoration(to_announce, listofstatuses):
@@ -126,7 +126,7 @@ def announce_restoration(to_announce, listofstatuses):
                 print('[Announcing] Announcing restoration of ' + component.title() + '.')
                 r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + '/components/' + components_id[component], \
                     headers = {'Authorization': 'OAuth ' + API_key}, \
-                    data = json.dumps({"component": {"status": "operational"}}))
+                    data = json.dumps({"component": {"status": "operational"}}), timeout=27.05)
                 to_announce.remove(component)
     finally:
         lock.release()
