@@ -11,6 +11,7 @@ User=ruxn
 Group=ruxn
 ExecStart=/usr/bin/rclone mount gcrypt: /mnt/gdrive \
     --allow-other \
+    --dir-cache-time 1000h \
     --poll-interval 15s \
     --log-level INFO
 ExecStop=/bin/fusermount -uz /mnt/gdrive
