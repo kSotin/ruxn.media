@@ -1,0 +1,8 @@
+[Unit]
+Description=Moves Library Contents to Cloud
+
+[Service]
+User=ruxn
+Group=ruxn
+ExecStart=/opt/bin/movetocloud.sh
+Restart=no

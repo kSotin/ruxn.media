@@ -1,0 +1,10 @@
+[Unit]
+Description=Moves Library Contents to Cloud Regularly
+
+[Timer]
+OnStartupSec=10m
+OnUnitInactiveSec=10m
+Unit=movetocloud.service
+
+[Install]
+WantedBy=multi-user.target
