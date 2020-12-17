@@ -1,6 +1,6 @@
 [Unit]
 Description=Service Status Propagator
-After=network-online.target rclone.service mergerfs.service plexmediaserver.service
+After=network-online.target
 
 [Service]
 Type=simple
