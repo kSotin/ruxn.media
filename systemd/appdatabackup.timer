@@ -1,0 +1,10 @@
+[Unit]
+Description=Appdata Backup Timer
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+Unit=appdatabackup.service
+
+[Install]
+WantedBy=multi-user.target

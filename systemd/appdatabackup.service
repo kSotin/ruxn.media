@@ -1,0 +1,8 @@
+[Unit]
+Description=Appdata Backup Service
+
+[Service]
+User=ruxn
+Group=ruxn
+ExecStart=/opt/bin/appdatabackup.sh
+Restart=no

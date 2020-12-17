@@ -10,8 +10,6 @@ RADARR_CLOUD=gdrive:backups/radarrbackups
 SONARR_CLOUD=gdrive:backups/sonarrbackups
 BACKUPS_CLOUD=gdrive:backups
 
-echo "Appdata backup starting at $(date)"
-echo "Syncing cloud directories with local ones..."
 if [ -d "${PLEX_LOCAL}" -a "$(ls "${PLEX_LOCAL}")" ]
 then
     echo "Syncing PLEX backups..."
@@ -47,7 +45,3 @@ else
     echo "BAZARR appdata directory not found, skipping..."
     echo
 fi
-echo "Appdata Backup completed at $(date)"
-echo
-echo "============================================================================"
-echo
