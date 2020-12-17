@@ -1,5 +1,5 @@
 [Unit]
-Description=Clears Completed Torrent Regularly
+Description=Torrent Cleaner Timer
 
 [Timer]
 OnStartupSec=10m

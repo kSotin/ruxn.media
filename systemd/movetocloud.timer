@@ -1,5 +1,5 @@
 [Unit]
-Description=Moves Library Contents to Cloud Regularly
+Description=Cloud Uploader for Library Contents Timer
 
 [Timer]
 OnStartupSec=10m

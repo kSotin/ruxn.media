@@ -1,5 +1,5 @@
 [Unit]
-Description=Clears Completed Torrent
+Description=Torrent Cleaner
 
 [Service]
 User=ruxn

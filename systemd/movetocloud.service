@@ -1,5 +1,5 @@
 [Unit]
-Description=Moves Library Contents to Cloud
+Description=Cloud Uploader for Library Contents
 
 [Service]
 User=ruxn
