@@ -1,6 +1,6 @@
 [Unit]
 Description=Service Availability Checker & Updater
-After=network-online.target
+After=network-online.target rclone.service mergerfs.service plexmediaserver.service
 
 [Service]
 Type=simple

@@ -1,8 +1,10 @@
 [Unit]
 Description=Torrent Cleaner Timer
+Requires=qbittorrent.service
+After=qbittorrent.service
 
 [Timer]
-OnStartupSec=10m
+OnStartupSec=0
 OnUnitInactiveSec=10m
 Unit=cleartorrent.service
 

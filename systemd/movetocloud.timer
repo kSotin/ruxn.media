@@ -1,8 +1,10 @@
 [Unit]
 Description=Cloud Uploader for Library Contents Timer
+Wants=network-online.target
+After=network-online.target
 
 [Timer]
-OnStartupSec=10m
+OnStartupSec=0
 OnUnitInactiveSec=10m
 Unit=movetocloud.service
 
