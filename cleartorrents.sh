@@ -9,6 +9,7 @@ then
 fi
 
 THRESHOLD=85
+TARGET=75
 DRIVE=/dev/sda3
 
 # Get disk usage
@@ -17,13 +18,14 @@ if [ ${USED} -lt ${THRESHOLD} ]
 then
     echo "[Skipping] Disk usage: ${USED}%, skipping..."
     exit
+else
+    while [ ${USED} -ge ${TARGET} ]
+    do
+        echo "[Working] Disk usage: ${USED}%."
+        /usr/bin/python3 "$(cd `dirname $0`; pwd)/cleartorrents.py"
+        # Wait for apps to refresh
+        sleep 70
+        # Get disk usage
+        USED=$(df -h | grep ${DRIVE} | awk '{print $5}' | sed 's/%//')
+    done
 fi
-while [ ${USED} -ge ${THRESHOLD} ]
-do
-    echo "[Working] Disk usage: ${USED}%."
-    /usr/bin/python3 "$(cd `dirname $0`; pwd)/cleartorrent.py"
-    # Wait for apps to refresh
-    sleep 70
-    # Get disk usage
-    USED=$(df -h | grep ${DRIVE} | awk '{print $5}' | sed 's/%//')
-done

@@ -6,7 +6,7 @@ After=qbittorrent.service
 [Timer]
 OnStartupSec=0
 OnUnitInactiveSec=10m
-Unit=cleartorrent.service
+Unit=cleartorrents.service
 
 [Install]
 WantedBy=multi-user.target
