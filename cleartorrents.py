@@ -10,7 +10,7 @@ def main():
             cookies=r_auth.cookies.get_dict())
     if r_get.json():
         for torrent in r_get.json():
-            if torrent['max_seeding_time'] == max_seeding_time:
+            if torrent['max_seeding_time'] == max_seeding_time and not 'paused' in torrent['state']:
                 print('[Working] Pausing torrent "' + torrent['name'] + '"...')
                 r_pause = requests.get('http://localhost:8080/api/v2/torrents/pause?hashes=' + torrent['hash'], \
                           cookies=r_auth.cookies.get_dict())
