@@ -64,6 +64,8 @@ def check_site(site_url, isDown):
             if isDown:
                 return False
             else:
+                if 'jackett' in site_url:
+                    time.sleep(30)
                 i += 1
         else:
             if r.status_code == 200:
