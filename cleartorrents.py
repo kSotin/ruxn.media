@@ -1,9 +1,12 @@
 import requests
 import subprocess
+import time
 from credentials import *
 
 
 def main():
+    # Get time
+    current = int(time.time())
     # Check if qBittorrent daemon is currently running
     check_qbt = subprocess.run('systemctl is-active qbittorrent', \
                 stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
@@ -18,7 +21,8 @@ def main():
         exit()
     if r_get.json():
         for torrent in r_get.json():
-            if torrent['max_seeding_time'] == max_seeding_time and not 'paused' in torrent['state']:
+            if torrent['max_seeding_time'] == max_seeding_time and not 'paused' in torrent['state'] \
+               and current - torrent['completion_on'] >= 1800:    # Completed 30min before
                 print('[Working] Pausing torrent "' + torrent['name'] + '"...')
                 r_pause = requests.get('http://localhost:8080/api/v2/torrents/pause?hashes=' + torrent['hash'], \
                           cookies=r_auth.cookies.get_dict(), timeout=27.05)
