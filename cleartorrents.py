@@ -1,13 +1,21 @@
 import requests
+import subprocess
 from credentials import *
 
 
 def main():
-    r_auth = requests.post('http://localhost:8080/api/v2/auth/login', \
-             headers={'Referer': 'http://localhost:8080'}, \
-             data={'username': qbtusername, 'password': qbtpassword}, timeout=27.05)
-    r_get = requests.get('http://localhost:8080/api/v2/torrents/info?filter=completed&sort=completion_on', \
-            cookies=r_auth.cookies.get_dict(), timeout=27.05)
+    # Check if qBittorrent daemon is currently running
+    check_qbt = subprocess.run('systemctl is-active qbittorrent', \
+                stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
+    if check_qbt.returncode == 0:
+        r_auth = requests.post('http://localhost:8080/api/v2/auth/login', \
+                 headers={'Referer': 'http://localhost:8080'}, \
+                 data={'username': qbtusername, 'password': qbtpassword}, timeout=27.05)
+        r_get = requests.get('http://localhost:8080/api/v2/torrents/info?filter=completed&sort=completion_on', \
+                cookies=r_auth.cookies.get_dict(), timeout=27.05)
+    else:
+        print('[Skipping] qBittorrent not running, skipping...')
+        exit()
     if r_get.json():
         for torrent in r_get.json():
             if torrent['max_seeding_time'] == max_seeding_time and not 'paused' in torrent['state']:
