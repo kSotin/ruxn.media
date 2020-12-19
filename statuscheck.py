@@ -66,6 +66,8 @@ def check_site(site_url, isDown):
             else:
                 if 'jackett' in site_url:
                     time.sleep(30)
+                else:
+                    time.sleep(1)
                 i += 1
         else:
             if r.status_code == 200:
@@ -86,6 +88,7 @@ def check_proxy(proxy_url, isDown):
             if isDown:
                 return False
             else:
+                time.sleep(1)
                 i += 1
         else:
             if r.status_code == 401 or r.status_code == 502:
