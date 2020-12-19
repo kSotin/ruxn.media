@@ -35,7 +35,7 @@ do
         then
             echo "[Working] Selecting ${OLDEST_NAME}..."
             /usr/bin/rclone mkdir "${CLOUD_MOVIES_DIR}/${OLDEST_NAME}"
-            /usr/bin/rclone move "${OLDEST}" "${CLOUD_MOVIES_DIR}/${OLDEST_NAME}" --delete-empty-src-dirs
+            /usr/bin/rclone move "${OLDEST}" "${CLOUD_MOVIES_DIR}/${OLDEST_NAME}" --log-level INFO --delete-empty-src-dirs
             echo "[Working] Cleaning up..."
             rmdir "${OLDEST}"
             echo "[Working] ${OLDEST_NAME} moved to cloud."
@@ -43,7 +43,7 @@ do
         then
             echo "[Working] Selecting ${OLDEST_NAME}..."
             /usr/bin/rclone mkdir "${CLOUD_TVSHOWS_DIR}/${OLDEST_NAME}"
-            /usr/bin/rclone move "${OLDEST}" "${CLOUD_TVSHOWS_DIR}/${OLDEST_NAME}" --delete-empty-src-dirs
+            /usr/bin/rclone move "${OLDEST}" "${CLOUD_TVSHOWS_DIR}/${OLDEST_NAME}" --log-level INFO --delete-empty-src-dirs
             echo "[Working] Cleaning up..."
             rmdir "${OLDEST}"
             echo "[Working] ${OLDEST_NAME} moved to cloud."
