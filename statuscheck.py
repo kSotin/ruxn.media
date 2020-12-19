@@ -59,7 +59,7 @@ def check_site(site_url, isDown):
     i = 0
     while i < 5:
         try:
-            r = requests.get(site_url, timeout=63.05)
+            r = requests.get(site_url, timeout=243.05)
         except requests.exceptions.RequestException:
             if isDown:
                 return False
@@ -83,7 +83,7 @@ def check_proxy(proxy_url, isDown):
     i = 0
     while i < 5:
         try:
-            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=63.05)
+            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=243.05)
         except requests.exceptions.RequestException:
             if isDown:
                 return False
