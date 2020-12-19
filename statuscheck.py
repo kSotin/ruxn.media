@@ -75,14 +75,6 @@ def check_site(site_url, isDown):
     return False
 
 
-def check_back_end(service):
-    return_code = subprocess.call('systemctl is-active ' + service, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
-    if return_code == 0:
-        return True
-    else:
-        return False
-
-
 def check_proxy(proxy_url, isDown):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
@@ -101,6 +93,22 @@ def check_proxy(proxy_url, isDown):
             else:
                 return False
     return False
+
+
+def check_service(service):
+    return_code = subprocess.call('systemctl is-active ' + service + '.service', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
+    if return_code == 0:
+        return True
+    else:
+        return False
+
+
+def check_timer(timer):
+    return_code = subprocess.call('systemctl is-active ' + timer + '.timer', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
+    if return_code == 0:
+        return True
+    else:
+        return False
 
 
 def fetch_from_page():
@@ -175,25 +183,26 @@ def main(argv):
     while True:
         # Host
         if tier == 0:
-            # Check plex
-            if not check_back_end('plexmediaserver') and statuses['plex media server']:
-                print('[Outage] An outage detected of PMS.')
-                announce_outage(components_id['plex media server'])
-                statuses['plex media server'] = False
-            if check_back_end('plexmediaserver') and not statuses['plex media server']:
-                print('[Restoration] Restoration from outage detected of PMS.')
-                statuses['plex media server'] = True
-                to_announce.add('plex media server')
-            # Check back-end services
+            # Check services
             for service in services:
-                if not check_back_end(service) and statuses[service]:
+                if not check_service(service) and statuses[service]:
                     print('[Outage] An outage detected of ' + service + '.')
                     announce_outage(components_id[service])
                     statuses[service] = False
-                if check_back_end(service) and not statuses[service]:
+                if check_service(service) and not statuses[service]:
                     print('[Restoration] Restoration from outage detected of ' + service + '.')
                     statuses[service] = True
                     to_announce.add(service)
+            # Check timers
+            for timer in timers:
+                if not check_timer(timer) and statuses[timer]:
+                    print('[Outage] An outage detected of ' + timer + '.')
+                    announce_outage(components_id[timer])
+                    statuses[timer] = False
+                if check_timer(timer) and not statuses[timer]:
+                    print('[Restoration] Restoration from outage detected of ' + timer + '.')
+                    statuses[timer] = True
+                    to_announce.add(timer)
         # Tier-1 proxy
         elif tier == 1:
             # Check sites
