@@ -34,7 +34,7 @@ def main():
                     exit(1)
             else:
                 continue
-        print('[Skipping] No torrent eligible for clearing, skipping...')
+        print('[Skipping] No torrent eligible for cleaning, skipping...')
         exit()
     else:
         print('[Skipping] No torrent, skipping...')
