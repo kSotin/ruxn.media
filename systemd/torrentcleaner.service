@@ -4,5 +4,5 @@ Description=Torrent Cleaner
 [Service]
 User=ruxn
 Group=ruxn
-ExecStart=/opt/bin/cleartorrents.sh
+ExecStart=/opt/bin/torrentcleaner.sh
 Restart=no

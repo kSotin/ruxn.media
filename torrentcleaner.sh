@@ -22,7 +22,7 @@ else
     while [ ${USED} -ge ${TARGET} ]
     do
         echo "[Working] Disk usage: ${USED}%."
-        /usr/bin/python3 "$(cd `dirname $0`; pwd)/cleartorrents.py"
+        /usr/bin/python3 "$(cd `dirname $0`; pwd)/torrentcleaner.py"
         # Wait for apps to refresh
         sleep 70
         # Get disk usage
