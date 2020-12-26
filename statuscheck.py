@@ -57,18 +57,15 @@ def merge_statuses(merge_to, merge_from):
 
 def check_site(site_url, isDown):
     i = 0
-    while i < 5:
+    while i < 2:
         try:
-            r = requests.get(site_url, timeout=243.05)
+            r = requests.get(site_url, timeout=27.05)
         except requests.exceptions.RequestException:
             if isDown:
                 return False
-            else:
-                if 'jackett' in site_url:
-                    time.sleep(30)
-                else:
-                    time.sleep(1)
-                i += 1
+            if 'jackett' in site_url:
+                time.sleep(60)
+            i += 1
         else:
             if r.status_code == 200:
                 return True
@@ -81,15 +78,13 @@ def check_proxy(proxy_url, isDown):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
     i = 0
-    while i < 5:
+    while i < 2:
         try:
-            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=243.05)
+            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=27.05)
         except requests.exceptions.RequestException:
             if isDown:
                 return False
-            else:
-                time.sleep(1)
-                i += 1
+            i += 1
         else:
             if r.status_code == 401 or r.status_code == 502:
                 return True
