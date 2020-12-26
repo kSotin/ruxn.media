@@ -2,6 +2,9 @@
 Description=Cloud Uploader for Library Contents
 
 [Service]
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+Nice=15
 User=ruxn
 Group=ruxn
 ExecStart=/opt/bin/movetocloud.sh

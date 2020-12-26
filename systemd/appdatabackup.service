@@ -2,6 +2,9 @@
 Description=Appdata Backup Service
 
 [Service]
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+Nice=15
 User=ruxn
 Group=ruxn
 ExecStart=/opt/bin/appdatabackup.sh
