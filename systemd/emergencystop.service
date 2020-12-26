@@ -1,8 +1,0 @@
-[Unit]
-Description=Emergency Stopper
-
-[Service]
-User=ruxn
-Group=ruxn
-ExecStart=/opt/bin/emergencystop.sh
-Restart=no
