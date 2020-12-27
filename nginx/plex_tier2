@@ -28,12 +28,12 @@ server {
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 10m;
 
-    gzip on;
-    gzip_vary on;
-    gzip_min_length 1000;
-    gzip_proxied any;
-    gzip_types text/plain text/css text/xml application/xml text/javascript application/x-javascript image/svg+xml;
-    gzip_disable "MSIE [1-6]\.";
+    gzip off;
+    # gzip_vary on;
+    # gzip_min_length 1000;
+    # gzip_proxied any;
+    # gzip_types text/plain text/css text/xml application/xml text/javascript application/x-javascript image/svg+xml;
+    # gzip_disable "MSIE [1-6]\.";
 
     client_max_body_size 100M;
 
