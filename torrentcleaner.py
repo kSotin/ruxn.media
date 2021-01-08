@@ -21,7 +21,7 @@ def main():
         exit()
     if r_get.json():
         for torrent in r_get.json():
-            if torrent['max_seeding_time'] == max_seeding_time and not 'paused' in torrent['state'] \
+            if torrent['max_ratio'] == max_ratio and not 'paused' in torrent['state'] \
                and current - torrent['completion_on'] >= 1800:    # Completed 30min before
                 print('[Working] Pausing torrent "' + torrent['name'] + '"...')
                 r_pause = requests.get('http://localhost:8080/api/v2/torrents/pause?hashes=' + torrent['hash'], \
