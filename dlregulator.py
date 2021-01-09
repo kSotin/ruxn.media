@@ -6,7 +6,7 @@ from credentials import *
 
 threshold_low = 85
 threshold_high = 95
-drive = '/dev/sda3'
+drive = '/dev/md3'
 
 
 limited = False

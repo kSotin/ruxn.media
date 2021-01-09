@@ -9,7 +9,7 @@ then
 fi
 
 THRESHOLD=75
-DRIVE=/dev/sda3
+DRIVE=/dev/md3
 LOCAL_MOVIES_DIR="/home/ruxn/local/Movies"
 LOCAL_TVSHOWS_DIR="/home/ruxn/local/TV Shows"
 CLOUD_MOVIES_DIR="gcrypt:Movies"
