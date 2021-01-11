@@ -57,7 +57,7 @@ def merge_statuses(merge_to, merge_from):
 
 def check_site(site_url, isDown):
     i = 0
-    while i < 2:
+    while i < 3:
         try:
             r = requests.get(site_url, timeout=27.05)
         except requests.exceptions.RequestException:
@@ -78,7 +78,7 @@ def check_proxy(proxy_url, isDown):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
     i = 0
-    while i < 2:
+    while i < 3:
         try:
             r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=27.05)
         except requests.exceptions.RequestException:
