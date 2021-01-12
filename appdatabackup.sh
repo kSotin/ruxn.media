@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 PLEX_LOCAL="/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-in Support/Databases"
 RADARR_LOCAL=/home/ruxn/.config/Radarr/Backups/scheduled
