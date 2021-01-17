@@ -13,7 +13,8 @@ ExecStart=/usr/bin/rclone mount gcrypt: /mnt/gdrive \
     --allow-other \
     --dir-cache-time 1000h \
     --poll-interval 15s \
-    --log-level INFO
+    --log-level INFO \
+    --async-read=false
 ExecStop=/bin/fusermount -uz /mnt/gdrive
 Restart=on-failure
 
