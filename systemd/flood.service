@@ -1,0 +1,11 @@
+[Unit]
+Description=Flood Web UI
+After=network.target
+
+[Service]
+WorkingDirectory=~
+ExecStart=/usr/bin/flood
+User=ruxn
+
+[Install]
+WantedBy=multi-user.target
