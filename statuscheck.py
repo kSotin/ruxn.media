@@ -100,8 +100,9 @@ def check_service(service):
 
 
 def check_timer(timer):
-    return_code = subprocess.call('systemctl is-active ' + timer + '.timer', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
-    if return_code == 0:
+    timer_active = subprocess.call('systemctl is-active ' + timer + '.timer', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
+    service_failed = subprocess.call('systemctl is-failed ' + timer + '.service', stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, shell=True)
+    if timer_active == 0 and service_failed != 0:
         return True
     else:
         return False
