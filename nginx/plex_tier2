@@ -55,4 +55,7 @@ server {
     location / {
         proxy_pass https://plex_backend;
     }
+    location /statuscheck {
+        return 200;
+    }
 }

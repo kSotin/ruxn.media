@@ -123,20 +123,8 @@ def main(argv):
                 else:
                     switch_inwall_proxy(False)
                     print("[Proxy Switch] Switched to main proxy.")
-        # Tier-1 proxy
-        elif tier == 1:
-            if diff[tier0] == True:
-                if new_statuses[tier0] == False:
-                    if switch_nginx_config(2) == True:
-                        print("[Config Switch] Switched to secondary config.")
-                    else:
-                        print("[Config Switch] Config not switched.")
-                else:
-                    if switch_nginx_config(1) == True:
-                        print("[Config Switch] Switched to primary config.")
-                    else:
-                        print("[Config Switch] Config not switched.")
-        else:
+        # Tier-2 proxy
+        elif tier == 2:
             if diff[tier1_1] == True:
                 if new_statuses[tier1_1] == False:
                     if new_statuses[tier1_2] == True:
