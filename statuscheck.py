@@ -63,8 +63,6 @@ def check_site(site_url, isDown):
         except requests.exceptions.RequestException:
             if isDown:
                 return False
-            if 'jackett' in site_url:
-                time.sleep(60)
             i += 1
         else:
             if r.status_code == 200:
@@ -80,13 +78,13 @@ def check_proxy(proxy_url, isDown):
     i = 0
     while i < 3:
         try:
-            r = s.get('https://' + proxy_url, headers={'Host': 'plex.ruxn.media'}, timeout=27.05)
+            r = s.get('https://' + proxy_url, + '/statuscheck', headers={'Host': 'plex.ruxn.media'}, timeout=27.05)
         except requests.exceptions.RequestException:
             if isDown:
                 return False
             i += 1
         else:
-            if r.status_code == 401 or r.status_code == 502:
+            if r.status_code == 200:
                 return True
             else:
                 return False
