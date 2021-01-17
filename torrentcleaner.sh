@@ -10,7 +10,7 @@ fi
 
 THRESHOLD=85
 TARGET=75
-DRIVE=/dev/sda3
+DRIVE=/dev/md3
 
 # Get disk usage
 USED=$(df -h | grep ${DRIVE} | awk '{print $5}' | sed 's/%//')
