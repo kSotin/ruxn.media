@@ -2,7 +2,7 @@
 Description=qBittorrent Daemon Service
 Documentation=man:qbittorrent-nox(1)
 Wants=network-online.target
-After=network-online.target nss-lookup.target mergerfs.service
+After=network-online.target nss-lookup.target mergerfs.service wg-quick.target
 Requires=mergerfs.service
 
 [Service]
