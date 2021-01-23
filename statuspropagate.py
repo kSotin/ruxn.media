@@ -43,7 +43,7 @@ def switch_inwall_proxy(to_backup):
 
 
 def switch_nginx_config(to_config):
-    link_path = '/etc/nginx/sites-enabled/plex'
+    link_dir = '/etc/nginx/sites-enabled'
     primary_config = '/etc/nginx/sites-available/plex'
     secondary_config = '/etc/nginx/sites-available/plex_2'
     tertiary_config = '/etc/nginx/sites-available/plex_3'
@@ -54,9 +54,9 @@ def switch_nginx_config(to_config):
     elif to_config == 3:
         new_config = tertiary_config
 
-    remove_old_link = subprocess.run('rm ' + link_path, shell=True)
+    remove_old_link = subprocess.run('rm ' + link_dir + '/plex*', shell=True)
     if remove_old_link.returncode == 0:
-        create_new_link = subprocess.run('ln -s ' + new_config + ' ' + link_path, shell=True)
+        create_new_link = subprocess.run('ln -s ' + new_config + ' ' + link_dir, shell=True)
         if create_new_link.returncode == 0:
             reload_nginx = subprocess.run('/usr/sbin/nginx -s reload', shell=True)
             if reload_nginx.returncode != 0:
