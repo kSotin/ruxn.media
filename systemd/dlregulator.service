@@ -11,4 +11,3 @@ ExecStart=/usr/bin/python3 -u /opt/bin/dlregulator.py
 
 [Install]
 WantedBy=multi-user.target
-
