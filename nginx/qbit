@@ -1,12 +1,12 @@
 server {
     listen 80;
-    server_name torrent.ruxn.media;
+    server_name qbit.ruxn.media;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443;
-    server_name torrent.ruxn.media;
+    server_name qbit.ruxn.media;
 
     # at this point we haven't created the certificate yet, but that's ok.
     # if, when creating the certificate (see below) it goes to another folder, be sure
