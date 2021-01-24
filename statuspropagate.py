@@ -91,7 +91,7 @@ def main(argv):
     init_statuses = page_info[0]
     components_name = page_info[1]
     for component in statuses_full:
-        statuses_full[component] = status_trans[init_statuses[components_id[component]]]
+        statuses_full[component] = status_trans.get(init_statuses[components_id[component]], True)
         diff[component] = False
     new_statuses = statuses_full.copy()
 
@@ -99,7 +99,7 @@ def main(argv):
         statuses = new_statuses.copy()
         new_page_info = fetch_from_page()
         for component in statuses_full:
-            new_statuses[component] = status_trans[new_page_info[0][components_id[component]]]
+            new_statuses[component] = status_trans.get(new_page_info[0][components_id[component]], True)
             diff[component] = new_statuses[component] ^ statuses[component]
 
         # propagators

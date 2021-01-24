@@ -161,7 +161,7 @@ def main(argv):
     }
     init_statuses = fetch_from_page()
     for component in statuses:
-        statuses[component] = status_trans[init_statuses[components_id[component]]]
+        statuses[component] = status_trans.get(init_statuses[components_id[component]], True)
     to_announce = set()
     listofstatuses = [statuses]
 
