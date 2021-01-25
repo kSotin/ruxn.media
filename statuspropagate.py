@@ -20,7 +20,7 @@ def fetch_from_page():
 
 def IFTTT_announce(component_name, new_status):
     r = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_status_update/with/key/' + IFTTT_key, \
-        data = {"value1": component_name, "value2": new_status.replace('_', ' ').capitalize()}, \
+        data = {"value1": component_name, "value2": new_status.replace('_', ' ').title()}, \
         timeout=27.05)
 
 
