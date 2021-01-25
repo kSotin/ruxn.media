@@ -18,14 +18,10 @@ def fetch_from_page():
     return statuses, names
 
 
-def IFTTT_announce_outage(component_id, components_name):
-    r = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_outage/with/key/' + IFTTT_key, \
-        data = {"value1": components_name[component_id]}, timeout=27.05)
-
-
-def IFTTT_announce_restoration(component_id, components_name):
-    r = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_restoration/with/key/' + IFTTT_key, \
-        data = {"value1": components_name[component_id]}, timeout=27.05)
+def IFTTT_announce(component_name, new_status):
+    r = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_status_update/with/key/' + IFTTT_key, \
+        data = {"value1": component_name, "value2": new_status.replace('_', ' ').capitalize()}, \
+        timeout=27.05)
 
 
 def switch_inwall_proxy(to_backup):
@@ -82,16 +78,11 @@ def main(argv):
                 tier = int(arg)
 
     # Initialization
-    status_trans = {
-        'operational': True,
-        'major_outage': False,
-    }
     diff = statuses_full.copy()
     page_info = fetch_from_page()
-    init_statuses = page_info[0]
     components_name = page_info[1]
     for component in statuses_full:
-        statuses_full[component] = status_trans.get(init_statuses[components_id[component]], True)
+        statuses_full[component] = page_info[0].get(components_id[component], 'operational')
         diff[component] = False
     new_statuses = statuses_full.copy()
 
@@ -99,8 +90,8 @@ def main(argv):
         statuses = new_statuses.copy()
         new_page_info = fetch_from_page()
         for component in statuses_full:
-            new_statuses[component] = status_trans.get(new_page_info[0][components_id[component]], True)
-            diff[component] = new_statuses[component] ^ statuses[component]
+            new_statuses[component] = new_page_info[0].get(components_id[component], 'operational')
+            diff[component] = new_statuses[component] != statuses[component]
 
         # propagators
         # Host
@@ -108,16 +99,13 @@ def main(argv):
             # publish to IFTTT
             for component in statuses_full:
                 if diff[component] == True:
-                    if new_statuses[component] == False:
-                        IFTTT_announce_outage(components_id[component], components_name)
-                        print("[IFTTT] Outage announced of " + component.title() + ".")
-                    else:
-                        IFTTT_announce_restoration(components_id[component], components_name)
-                        print("[IFTTT] Restoration announced of " + component.title() + ".")
+                    IFTTT_announce(components_name[components_id[component]], new_statuses[component])
+                    print("[IFTTT] Status update announced of " + component.title() + ": " + \
+                          new_statuses[component] + ".")
 
             # switch to backup in-wall proxy
             if diff[main_inwall_proxy] == True:
-                if new_statuses[main_inwall_proxy] == False:
+                if new_statuses[main_inwall_proxy] != 'operational':
                     switch_inwall_proxy(True)
                     print("[Proxy Switch] Switched to backup proxy.")
                 else:
@@ -126,8 +114,8 @@ def main(argv):
         # Tier-2 proxy
         elif tier == 2:
             if diff[tier1_1] == True:
-                if new_statuses[tier1_1] == False:
-                    if new_statuses[tier1_2] == True:
+                if new_statuses[tier1_1] != 'operational':
+                    if new_statuses[tier1_2] == 'operational':
                         if switch_nginx_config(2) == True:
                             print("[Config Switch] Switched to secondary config.")
                         else:
