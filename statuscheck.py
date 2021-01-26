@@ -8,9 +8,13 @@ import socket
 import sys
 import getopt
 import subprocess
+from retrying import retry
 
 
-# For status syncing
+def retry_if_requestexception(exception):
+    return isinstance(exception, requests.exceptions.RequestException)
+
+
 def send_statuses(sender_port, receiver_addr, receiver_port):
     data = json.dumps(statuses)
     sender_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -52,36 +56,39 @@ def check_consistency(component):
         if statuses != None:
             if component in statuses:
                 component_status.append(statuses[component])
-    print(component_status)
     if len(set(component_status)) == 1:
         return True
     else:
         return False
 
 
+@retry(retry_on_exception=retry_if_requestexception)
 def announce(status, component):
     while statuses[component] == status:
         if check_consistency(component):
+            page_info = fetch_from_page()
             if statuses[component]:
-                if component in outage:
+                if page_info.get(components_id[component]) == 'major_outage':
                     print('[Announcing] Announcing restoration of ' + component.title() + '.')
                     r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + \
                         '/components/' + components_id[component], \
                         headers = {'Authorization': 'OAuth ' + API_key}, \
                         data = json.dumps({"component": {"status": "operational"}}), timeout=27.05)
-                    outage.remove(component)
+                else:
+                    print('[Skip-announcing] ' + component.title() + ' not to be updated, skipping...')
             else:
-                print('[Announcing] Announcing outage of ' + component.title() + '.')
-                r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + \
-                    '/components/' + components_id[component], \
-                    headers = {'Authorization': 'OAuth ' + API_key}, \
-                    data = json.dumps({"component": {"status": "major_outage"}}), timeout=27.05)
-                outage.add(component)
+                if page_info.get(components_id[component]) == 'operational':
+                    print('[Announcing] Announcing outage of ' + component.title() + '.')
+                    r = requests.patch('https://api.statuspage.io/v1/pages/' + page_id + \
+                        '/components/' + components_id[component], \
+                        headers = {'Authorization': 'OAuth ' + API_key}, \
+                        data = json.dumps({"component": {"status": "major_outage"}}), timeout=27.05)
+                else:
+                    print('[Skip-announcing] ' + component.title() + ' not to be updated, skipping...')
             break
         time.sleep(10)
 
 
-# For status checking
 def check_site(site_url):
     try:
         r = requests.get(site_url, timeout=27.05)
@@ -128,6 +135,7 @@ def check_timer(timer):
         return False
 
 
+@retry(retry_on_exception=retry_if_requestexception)
 def fetch_from_page():
     r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components', \
         headers = {'Authorization': 'OAuth ' + API_key}, timeout=27.05)
@@ -149,17 +157,16 @@ else:
         if opt in ("-t", "--tier"):
             tier = int(arg)
 
-# Initialize statuses
+# Initialization
 status_trans = {
     'operational': True,
     'major_outage': False,
 }
-init_statuses = fetch_from_page()
-for component in statuses:
-    statuses[component] = status_trans.get(init_statuses[components_id[component]], True)
 listofstatuses = [statuses]
 consistency = statuses.copy()
-outage = set()
+page_info = fetch_from_page()
+for component in statuses:
+    statuses[component] = status_trans.get(page_info.get(components_id[component]), True)
 
 # Sync statuses - receiver
 if tier != 0:
@@ -168,7 +175,7 @@ if tier != 0:
     indexofstatuses = 1
     for checker in sync_from_port:
         listofstatuses.append(None)
-        listofthreads.append(threading.Thread(target=receive_statuses, name=checker, \
+        listofthreads.append(threading.Thread(target=receive_statuses, \
             args=(sync_from_port[checker], indexofstatuses, checker)))
         listofthreads[-1].start()
         isalive.append(False)

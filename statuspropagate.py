@@ -6,8 +6,14 @@ import sys
 import getopt
 import subprocess
 import os
+from retrying import retry
 
 
+def retry_if_requestexception(exception):
+    return isinstance(exception, requests.exceptions.RequestException)
+
+
+@retry(retry_on_exception=retry_if_requestexception)
 def fetch_from_page():
     r = requests.get('https://api.statuspage.io/v1/pages/' + page_id + '/components', \
         headers = {'Authorization': 'OAuth ' + API_key}, timeout=27.05)
@@ -19,12 +25,14 @@ def fetch_from_page():
     return statuses, names
 
 
+@retry(retry_on_exception=retry_if_requestexception)
 def IFTTT_announce(component_name, new_status):
     r = requests.post('https://maker.ifttt.com/trigger/ruxnmedia_status_update/with/key/' + IFTTT_key, \
         data = {"value1": component_name, "value2": new_status.replace('_', ' ').title()}, \
         timeout=27.05)
 
 
+@retry(retry_on_exception=retry_if_requestexception)
 def read_inwall_proxy():
     headers = {
         'X-Auth-Email': cloudflare_email,
@@ -39,6 +47,7 @@ def read_inwall_proxy():
         return 2
 
 
+@retry(retry_on_exception=retry_if_requestexception)
 def switch_inwall_proxy(to_backup):
     headers = {
         'X-Auth-Email': cloudflare_email,
