@@ -1,0 +1,15 @@
+[Unit]
+Description=Subsync Agent
+
+[Service]
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+Nice=15
+Type=simple
+User=ruxn
+Restart=on-failure
+RestartSec=5
+ExecStart=/opt/bin/subsyncagent.sh
+
+[Install]
+WantedBy=multi-user.target
