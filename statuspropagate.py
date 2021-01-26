@@ -20,8 +20,8 @@ def fetch_from_page():
     statuses = {}
     names = {}
     for component_detail in r.json():
-        statuses[component_detail['id']] = component_detail['status']
-        names[component_detail['id']] = component_detail['name']
+        statuses[component_detail['id']] = component_detail.get('status')
+        names[component_detail['id']] = component_detail.get('name')
     return statuses, names
 
 

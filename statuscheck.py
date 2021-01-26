@@ -141,7 +141,7 @@ def fetch_from_page():
         headers = {'Authorization': 'OAuth ' + API_key}, timeout=27.05)
     statuses = {}
     for component_detail in r.json():
-        statuses[component_detail['id']] = component_detail['status']
+        statuses[component_detail['id']] = component_detail.get('status')
     return statuses
 
 
