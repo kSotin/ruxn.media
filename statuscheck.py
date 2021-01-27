@@ -101,18 +101,23 @@ def check_site(site_url):
             return False
 
 
-def check_proxy(proxy_url):
+def check_proxy(proxy_url, retry=False):
     s = requests.Session()
     s.mount('https://', host_header_ssl.HostHeaderSSLAdapter())
-    try:
-        r = s.get('https://' + proxy_url + '/statuscheck', headers={'Host': 'plex.ruxn.media'}, timeout=27.05)
-    except requests.exceptions.RequestException:
-        return False
-    else:
-        if r.status_code == 200:
-            return True
+    i = 0
+    while i < 3:
+        try:
+            r = s.get('https://' + proxy_url + '/statuscheck', headers={'Host': 'plex.ruxn.media'}, timeout=27.05)
+        except requests.exceptions.RequestException:
+            if not retry:
+                return False
+            i += 1
         else:
-            return False
+            if r.status_code == 200:
+                return True
+            else:
+                return False
+    return False
 
 
 def check_service(service):
@@ -242,11 +247,12 @@ while True:
                     statuses[proxy] = True
                     announcer = threading.Thread(target=announce, args=(True, proxy))
                     announcer.start()
-    else:
+    # Tier-2 Proxy
+    elif tier == 2:
         # Check proxies
         for proxy in proxies_url:
             if statuses[proxy]:
-                if not check_proxy(proxies_url[proxy]):
+                if not check_proxy(proxies_url[proxy], True):
                     print('[Outage] An outage detected of ' + proxy.title() + '.')
                     statuses[proxy] = False
                     announcer = threading.Thread(target=announce, args=(False, proxy))
